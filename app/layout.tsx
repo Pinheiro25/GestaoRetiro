@@ -19,7 +19,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="pt-br">
       <body className="bg-[#FDFCF8] flex min-h-screen">
-        <aside className="w-64 bg-white border-r border-stone-100 flex flex-col fixed h-full shadow-sm">
+        {/* ADICIONADO: print:hidden para o menu sumir no papel */}
+        <aside className="w-64 bg-white border-r border-stone-100 flex flex-col fixed h-full shadow-sm print:hidden">
           <div className="p-8 border-b border-stone-50 text-center">
             <h2 className="font-serif italic text-xl">Sangha</h2>
             <span className="text-[8px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full uppercase font-bold">{role}</span>
@@ -56,7 +57,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </button>
         </aside>
 
-        <main className="flex-1 ml-64 p-4">{children}</main>
+        {/* ALTERADO: print:ml-0 para o conteúdo ocupar a tela toda na impressão */}
+        <main className="flex-1 ml-64 p-4 print:ml-0 print:p-0">{children}</main>
       </body>
     </html>
   )
