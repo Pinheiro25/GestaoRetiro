@@ -88,8 +88,9 @@ export default function InscricaoDinamica() {
           <h1 className="text-3xl font-light mb-2">{retiroSelecionado?.titulo}</h1>
           <p className="text-stone-600 italic mb-4">"{retiroSelecionado?.tema}"</p>
           <div className="text-[10px] uppercase tracking-widest text-stone-500 font-bold space-y-1">
-            <p>📅 Chegada: {new Date(retiroSelecionado?.data_inicio).toLocaleDateString()} às {retiroSelecionado?.horario_chegada || '08:00'}</p>
-            <p>📅 Fim: {new Date(retiroSelecionado?.data_fim).toLocaleDateString()} às {retiroSelecionado?.horario_saida || '12:30'}</p>
+            {/* CORREÇÃO DE DATA: timeZone 'UTC' evita que o fuso local atrase o dia */}
+            <p>📅 Chegada: {new Date(retiroSelecionado?.data_inicio).toLocaleDateString('pt-BR', { timeZone: 'UTC' })} às {retiroSelecionado?.horario_chegada || '08:00'}</p>
+            <p>📅 Fim: {new Date(retiroSelecionado?.data_fim).toLocaleDateString('pt-BR', { timeZone: 'UTC' })} às {retiroSelecionado?.horario_saida || '12:30'}</p>
           </div>
         </div>
 
