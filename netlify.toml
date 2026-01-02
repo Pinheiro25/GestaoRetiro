@@ -1,0 +1,11 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[build.environment]
+  # Removido o EDGE por enquanto para garantir estabilidade no Next 16
+  NODE_VERSION = "20"
+  NEXT_FORCE_STATIC_IMAGES = "true"
