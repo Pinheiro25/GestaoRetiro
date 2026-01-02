@@ -1,8 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: 'standalone',
-  /* config options here */
+  // Isso ajuda o Netlify a entender a estrutura do Next 16
+  output: 'standalone', 
 };
 
 export default nextConfig;
