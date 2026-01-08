@@ -13,7 +13,6 @@ export default function LoginPortal() {
     e.preventDefault()
     setMensagem({ texto: 'Iniciando sintonização...', tipo: 'info' })
 
-    // Busca o usuário. Usamos .select('*, retiros(*)') para trazer o status do retiro também
     const { data, error } = await supabase
       .from('usuarios')
       .select('*, retiros!retiro_id!inner(*)')
@@ -26,25 +25,28 @@ export default function LoginPortal() {
     }
 
     if (data && data.length > 0) {
-      // Prioriza a inscrição no retiro que está ABERTO
       const sessao = data.find(i => i.retiros.status === 'ABERTO') || data[0]
 
+      // --- NOVIDADE: SALVAR EM COOKIE PARA O MIDDLEWARE LER ---
+      // Criamos um "token" simples. Em produção o ideal é JWT, 
+      // mas para o retiro, o nível de acesso no cookie já resolve o bloqueio de URL.
+      document.cookie = `sangha_session=${sessao.nivel_acesso}; path=/; max-age=86400; SameSite=Lax`
+      
+      // Mantemos o localStorage para uso dos componentes internos
       localStorage.setItem('user_role', sessao.nivel_acesso)
       localStorage.setItem('user_id', sessao.id)
       localStorage.setItem('user_name', sessao.nome)
-      localStorage.setItem('retiro_id', sessao.retiro_id)
 
       setMensagem({ texto: 'Bem-vindo(a), ' + sessao.nome, tipo: 'sucesso' })
 
-      // Redirecionamento baseado no papel
       setTimeout(() => {
-        if (sessao.nivel_acesso === 'ADMIN') router.push('/admin')
+        // Redirecionamento unificado para a Home ou Dashboard
+        if (['ADMIN', 'LIDER'].includes(sessao.nivel_acesso)) router.push('/lider')
         else if (sessao.nivel_acesso === 'FINANCEIRO') router.push('/financeiro')
-        else if (sessao.nivel_acesso === 'LOGISTICA') router.push('/logistica')
         else router.push('/meu-retiro')
       }, 1000)
     } else {
-      setMensagem({ texto: 'E-mail ou código não reconhecidos no sistema.', tipo: 'erro' })
+      setMensagem({ texto: 'E-mail ou código não reconhecidos.', tipo: 'erro' })
     }
   }
 
@@ -60,26 +62,24 @@ export default function LoginPortal() {
         <form onSubmit={realizarLogin} className="space-y-4">
           <input 
             type="email" 
-            placeholder="Seu e-mail cadastrado" 
+            placeholder="Seu e-mail" 
             className="w-full p-4 bg-stone-50 rounded-2xl outline-none border border-transparent focus:border-amber-200"
             onChange={e => setEmail(e.target.value)}
             required
           />
           <input 
             type="password" 
-            placeholder="Código de acesso (Ex: sangha2026)" 
+            placeholder="Código de acesso" 
             className="w-full p-4 bg-stone-50 rounded-2xl outline-none border border-transparent focus:border-amber-200"
             onChange={e => setCodigo(e.target.value)}
             required
           />
-          
           {mensagem.texto && (
             <p className={`text-xs text-center italic ${mensagem.tipo === 'erro' ? 'text-red-400' : 'text-amber-600'}`}>
               {mensagem.texto}
             </p>
           )}
-
-          <button type="submit" className="w-full bg-[#E8DCC4] text-stone-800 font-bold p-4 rounded-2xl hover:bg-[#DCCCAF] transition-all mt-4">
+          <button type="submit" className="w-full bg-[#E8DCC4] text-stone-800 font-bold p-4 rounded-2xl hover:bg-[#DCCCAF] transition-all">
             Entrar
           </button>
         </form>
